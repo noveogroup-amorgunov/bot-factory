@@ -12,7 +12,19 @@ class Bot {
     this.dialogs = {};
     this.middlewares = [];
 
+    this.version = 0;
+
     return this;
+  }
+
+  reset(light) {
+    if (!light) {
+      this.dialogs = {};
+      this.middlewares = [];
+      this.actions = [];
+    }
+    // this.dialogs.forEach(dialog => {});
+    this.version += 1;
   }
 
   processMessage(message) {
@@ -60,7 +72,7 @@ class Bot {
       };
 
       if (this.middlewares.length) {
-        console.log(`Bot::processMessage middlewares is runned (count: ${this.middlewares})`);
+        console.log(`Bot::processMessage middlewares is runned (count: ${this.middlewares.length})`);
         this.middlewares[0](session, goToNext());
       } else {
         lastNext();
@@ -112,12 +124,8 @@ class Bot {
     }
   }
 
-  addActions(regexp, dialogName) {
-
-  }
-
   addIntent(name, dialogName) {
-
+    this.actions.push({ dialogName, name });
   }
 }
 

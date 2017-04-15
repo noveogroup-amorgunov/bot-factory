@@ -1,19 +1,5 @@
-// var store = {
-//   dialogs: [{
-//     title: 'Block 1 for Hello user',
-//     cards: [{
-//       text: "Hello user",
-//       type: 'text'
-//     }, {
-//       text: "How are you?"
-//     }]
-//   }, {
-//     title: 'help',
-//     cards: ['....']
-//   }]
-// };
-
 const DialogFlow = require('../../common/models/dialog-flow');
+const makeDialogs = require('./make-dialogs');
 
 exports.register = (server, options, next) => {
   const routes = [];
@@ -33,6 +19,7 @@ exports.register = (server, options, next) => {
     method: 'POST',
     path: '/dialogs',
     handler: (request, reply) => {
+      // create new dialog-flow
       // const dialogFlow = new DialogFlow(request.payload);
       // dialogFlow.save().then((doc) => {
       //   console.log(doc);
@@ -41,6 +28,7 @@ exports.register = (server, options, next) => {
       const payload = request.payload;
       DialogFlow.findOneAndUpdate({}, payload, { new: true }).then((doc) => {
         console.log(doc);
+        makeDialogs(doc);
         reply(doc).code(200);
       }).catch(console.error);
     },

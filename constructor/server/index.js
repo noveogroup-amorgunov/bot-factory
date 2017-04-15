@@ -1,22 +1,24 @@
 require('app-module-path/register');
 require('dotenv-extended').load();
+require('./bot');
+
 const mongoose = require('mongoose');
 const Hapi = require('hapi');
 const inert = require('inert');
 const hapiBoomDecorators = require('hapi-boom-decorators');
-
 const routes = require('./routes');
-
+const DialogFlow = require('../../common/models/dialog-flow');
+const makeDialogs = require('./make-dialogs');
 
 mongoose.Promise = Promise;
-mongoose.connect('mongodb://root:root@ds161580.mlab.com:61580/botfactory-db');
+mongoose.connect(process.env.DB_CONNECT);
 
 const server = new Hapi.Server();
 
 // Set the port for listening server
 server.connection({
-  host: process.env.API_SERVER_HOST || 'localhost',
-  port: process.env.API_SERVER_PORT || '8081',
+  host: process.env.CONSTRUCTOR_SERVER_HOST || 'localhost',
+  port: process.env.CONSTRUCTOR_SERVER_PORT || '8081',
   routes: { cors: true }
 });
 
@@ -32,4 +34,9 @@ server.register(plugins.concat(routes), (err) => {
   server.start(() => {
     console.log(`API Server Running At: ${server.info.uri}`);
   });
+
+  DialogFlow.findOne().then((doc) => {
+    makeDialogs(doc);
+  }).catch(console.error);
 });
+

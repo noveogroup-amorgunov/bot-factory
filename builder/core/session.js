@@ -1,24 +1,56 @@
+const _ = require('lodash');
+const Dialog = require('./dialog');
+
 class Session {
   constructor({ userId, bot, userData }) {
     this.userId = userId;
     this.bot = bot;
     this.message = null;
+    this.dialogs = Object.keys(this.bot.dialogs).reduce((acc, key) => {
+      const obj = this.bot.dialogs[key];
+      const dialog = new Dialog({ dialogs: obj.cards, bot: this.bot, dialogName: obj.dialogName });
+      acc[key] = dialog;
+      return acc;
+    }, {});
+
+    this.isNew = true;
 
     this.callstack = [];
 
     this.sessionState = {
-      version: 0.1,
+      version: 1,
       awaitAnswer: false,
       lastQuestionData: null
     };
+
     this.user = userData;
+    this.user.data = {};
+
     this.data = {};
     this.results = null;
   }
 
   resetConversation() {
-    this.send('My services was updated!');
+    this.send('Мои сервисы и функционал был обновлен. Начнем с начала!)');
+    this.callstack = [];
+
+    this.dialogs = Object.keys(this.bot.dialogs).reduce((acc, key) => {
+      const obj = this.bot.dialogs[key];
+      const dialog = new Dialog({ dialogs: obj.cards, bot: this.bot, dialogName: obj.dialogName });
+      acc[key] = dialog;
+      return acc;
+    }, {});
+
+    this.sessionState = {
+      awaitAnswer: false,
+      lastQuestionData: null,
+      version: this.sessionState.version,
+    };
+    this.data = {};
+    this.results = null;
     this.endConversation();
+
+    console.log(this.dialogs);
   }
 
   getUsername() {
@@ -30,17 +62,41 @@ class Session {
     return 'Default user';
   }
 
+  _parseMsg(message) {
+    let msg = message;
+    if (/{username}/i.test(msg)) {
+      msg = msg.replace(/{username}/gi, this.getUsername());
+    }
+    const userAttributes = msg.match(/\{(.*?)\}/gi) || [];
+
+    // console.log(msg, userAttributes, this.user.data);
+    userAttributes
+      .map(attribute => attribute.replace(/{/g, '').replace(/}/g, ''))
+      .forEach((attributeName) => {
+        if (attributeName !== 'username' && this.user.data[attributeName]) {
+          msg = msg.replace(`{${attributeName}}`, this.user.data[attributeName] || '');
+        }
+      });
+    return msg;
+  }
+
   send(message) {
     // console.log('Session::send');
     // console.log(`message: ${message}`);
-    this.bot.connector.send(message, this.user);
+    this.isNew = false;
+    this.bot.connector.send(this._parseMsg(message), this.user);
   }
 
   sendQuestion(message, data) {
     this.sessionState.awaitAnswer = true;
     this.sessionState.lastQuestionData = data;
     this.activeDialogs().notRunNextStepImmediately = true;
-    this.bot.connector.send(message + ' \n(' + data.map((answer, index) => `${index}. ${answer.text}`).join(', ') + ')', this.user);
+
+    if (Array.isArray(data)) {
+      this.bot.connector.send(`${this._parseMsg(message)}: ${data.map((answer, index) => `\n${index}. ${answer.text}`).join('')}`, this.user);
+    } else {
+      this.bot.connector.send(this._parseMsg(message), this.user);
+    }
   }
 
   clearDialogsStack() {
@@ -52,19 +108,24 @@ class Session {
     // lastQuestionData
     // console.log(answer);
     // console.log(data);
-    if (+answer == answer && data[answer]) {
-      this.sessionState.awaitAnswer = false;
+    this.sessionState.awaitAnswer = false;
+    this.activeDialogs().notRunNextStepImmediately = false;
+
+    if (typeof data === 'string') {
+      this.user.data[data] = answer;
       this.sessionState.lastQuestionData = null;
-      this.activeDialogs().notRunNextStepImmediately = false;
+      this.startConversation();
+    } else if (+answer == answer && data[answer]) {
       this.results = answer;
+      this.sessionState.lastQuestionData = null;
       this.startConversation();
     } else {
-      this.send('I can\'t understand you. Choose please variant from list');
+      this.send('Я тебя не понял. Выбери пожалуйста вариант из списка');
     }
   }
 
   activeDialogs() {
-    console.log('Session::activeDialogs length:' + this.callstack.length);
+    console.log(`Session::activeDialogs length: ${this.callstack.length}`);
     const length = this.callstack.length;
     return length !== 0 && this.callstack[length - 1];
   }
@@ -73,12 +134,20 @@ class Session {
     console.log('Session::endDialog');
     this.callstack.pop();
     // if (this.activeDialogs()) {
-      this.startConversation();
+    this.startConversation();
     // }
   }
 
   startConversation(message = false) {
     console.log(`Session::startConversation  -  callstack: ${this.callstack.length}`);
+
+    if (this.sessionState.version !== this.bot.version) {
+      this.sessionState.version = this.bot.version;
+      if (!this.isNew) {
+        this.resetConversation();
+        return;
+      }
+    }
 
     if (this.sessionState.awaitAnswer) {
       console.log('await answer');
@@ -91,7 +160,7 @@ class Session {
     if (dialog) {
       dialog.exucate(this);
     } else {
-      const dialogName = Object.keys(this.bot.dialogs)[0];
+      const dialogName = Object.keys(this.dialogs)[0];
       if (!dialogName) {
         console.warn('Dialogs not found');
         return;
@@ -111,7 +180,7 @@ class Session {
   }
 
   beginDialog(dialogName) {
-    const dialog = this.bot.dialogs[dialogName];
+    const dialog = this.dialogs[dialogName];
     if (!dialog) {
       throw new Error(`Dialog ${dialogName} isn't exist`);
     }
@@ -121,9 +190,6 @@ class Session {
     console.log(`Session::beginDialog  -  callstack length: ${this.callstack.length}`);
     dialog.exucate(this);
   }
-
-
-
 }
 
 module.exports = Session;

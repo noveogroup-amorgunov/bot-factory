@@ -63,9 +63,7 @@ bot.dialog('entry', [(session, next) => {
   session.send('--------> I\'m pizza bot! 🍕 🦄');
   next();
 }, (session, next) => {
-  requestPromise('https://api.myjson.com/bins/15kh8z').then((body) => {
-    session.send(JSON.parse(body).data);
-  });
+
 }, (session, next) => {
   // session.sendQuestion('What is your city?', ['yes', 'no']);
   session.sendQuestion('Are you human?', answers);
