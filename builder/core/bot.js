@@ -1,5 +1,6 @@
 const Session = require('./session');
 const Dialog = require('./dialog');
+const _ = require('lodash');
 
 class Bot {
   constructor({ recognizer, connector }) {
@@ -51,12 +52,13 @@ class Bot {
 
       // run all receive middlewares
       let middlewaresStep = 0;
+      const middlewares = _.clone(this.middlewares);
 
       const goToNext = () => {
         middlewaresStep += 1;
         return () => {
-          if (typeof this.middlewares[middlewaresStep] === 'function') {
-            this.middlewares[middlewaresStep](session, goToNext());
+          if (typeof middlewares[middlewaresStep] === 'function') {
+            middlewares[middlewaresStep](session, goToNext());
           } else {
             console.log('Bot::processMessage middlewares ended: lastNext execated');
             lastNext();
@@ -71,9 +73,16 @@ class Bot {
         }
       };
 
-      if (this.middlewares.length) {
+      if (this.recognizer) {
+        middlewares.push(this.recognizer.handler);
+      }
+
+      // console.log(this.recognizer);
+      // console.log(this.middlewares);
+
+      if (middlewares.length) {
         console.log(`Bot::processMessage middlewares is runned (count: ${this.middlewares.length})`);
-        this.middlewares[0](session, goToNext());
+        middlewares[0](session, goToNext());
       } else {
         lastNext();
       }
