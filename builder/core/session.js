@@ -166,7 +166,8 @@ class Session {
         return;
         // throw new Error(`Dialog ${dialogName} isn't exist`);
       }
-      this.beginDialog(dialogName);
+      this.bot.connector.emit('receive-message', this.message);
+      // this.beginDialog(dialogName);
     }
   }
 

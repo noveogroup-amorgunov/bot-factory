@@ -1,4 +1,5 @@
 const request = require('request');
+
 const getParams = o => Object.keys(o).map(key => `${key}=${encodeURIComponent(o[key])}`).join('&');
 
 const requestPromise = (url, params = false) => {
@@ -22,7 +23,7 @@ module.exports = (acc, item) => {
   acc.push((session, next) => {
     requestPromise(item.text).then((body) => {
       session.send(JSON.parse(body).data);
-      // !item.isLast && next();
+      !itsem.isLast && next();
     });
   });
   return acc;

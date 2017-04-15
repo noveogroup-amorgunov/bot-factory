@@ -32,7 +32,7 @@ function makeDialogs(doc) {
       const msg = session.message.text; // 'I want order large pizza with tomato'
       const sessionId = session.userId;
 
-      if (session.callstack.length !== 0) {
+      if (session.callstack.length !== 0 || session.message.text === 'reset') {
         next();
         return;
       }
@@ -40,7 +40,9 @@ function makeDialogs(doc) {
       someAwesomeRecognizer(sessionId, msg)
       .then((response) => {
         console.log(response);
-        const intent = response.result.action;
+        // console.log(response.result.metadata);
+        // console.log(bot.actions);
+        const intent = response.result.metadata.intentName;
 
         if (intent === 'smalltalk.greeting') {
           session.send(response.result.fulfillment.speech);
@@ -51,7 +53,12 @@ function makeDialogs(doc) {
         const action = bot.actions.filter(action => action.name === intent).pop();
         console.log(action);
         if (action) {
-          session.beginDialog(action.dialogName);
+          if (!response.result.action || response.result.actionIncomplete === false) {
+            session.parameters = response.result.parameters;
+            session.beginDialog(action.dialogName);
+            // next();
+            return;
+          }
         }
 
         // else send just message from apiai
@@ -78,8 +85,9 @@ function makeDialogs(doc) {
     });
 
     const d = bot.dialog(dialog.title, _.reduce(dialog.cards, cardBuilder, []));
-    if (d.intent) {
-      d.triggerIntent(d.intent);
+    // console.log(dialog);
+    if (dialog.intent) {
+      d.triggerIntent(dialog.intent);
     }
   });
 
