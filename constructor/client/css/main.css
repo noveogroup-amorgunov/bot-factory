@@ -70,8 +70,6 @@
     border: 1px solid rgba(0, 0, 0, .09);
     border-bottom-color: rgba(0, 0, 0, .13);
     transition: box-shadow 80ms ease, border-color 80ms ease, background-color 80ms ease;
-    width: 82px;
-    height: 36px;
     line-height: 34px;
     text-align: center;
     border-radius: 7px;
@@ -82,7 +80,7 @@
     user-select: none;
     cursor: pointer;
     margin: 0 6px 12px 0;
-    padding: 0 3px;
+    padding: 0 15px;
 }
 
 .block-item.plus:before {
@@ -92,6 +90,10 @@
     height: 24px;
     opacity: .3;
     vertical-align: -6px;
+}
+
+.card-item {
+    display: none;
 }
 
 .card-item .types {
