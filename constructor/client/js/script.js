@@ -20,8 +20,9 @@ $(function () {
     var card = $('<div class="card-item" data-id=""><input class="title-input" placeholder="title" maxlength="25" type="text"> \
     <div class="types">\
     <div class="type" data-type="text">Text</div>\
-    <div class="type" data-type="question1">Question1</div>\
-    <div class="type" data-type="question2">Question2</div>\
+    <div class="type" data-type="user-question">User Question</div>\
+    <div class="type" data-type="dialog-question">Dialog Question</div>\
+    <div class="type" data-type="json">JSON API</div>\
     <div class="type" data-type="image">Image</div>\
     </div>\
     </div>');
@@ -49,11 +50,9 @@ $(function () {
         var titleDialog = that.val();
         $('.dialog-item[data-id="' + dialogId + '"]').html(titleDialog);
         dial.dialogs[dialogId - 1].title = titleDialog;
-
     });
 
     $('body').on('click', '.card-item .type', function () {
-
         var type = $(this).data('type');
         var typeObj = getCard(type);
         var dialogId = $(this).closest('.card-item').attr('data-id') - 1;
@@ -62,10 +61,18 @@ $(function () {
         dialog.cards.push(
             {
                 type: type,
-                text: $(typeObj).text()
+                text: null
             }
         );
+    });
 
+    $('body').on('blur', '.card-item .card', function () {
+        var that = $(this);
+        var dialogId = that.closest('.card-item').data('id') - 1;
+        var type = that.data('type');
+        var number = that.closest('.card-wrapper').index() - 1;
+
+        dial.dialogs[dialogId].cards[number] = parseCard(type, that);
     });
 
     $('body').on('click', '.dialog-item', function () {
@@ -73,24 +80,89 @@ $(function () {
         $('.card-item:not([data-id="' + id + '"])').hide();
         $('.card-item[data-id="' + id + '"]').show();
     });
+
+    $('body').on('click', '.card-plus', function () {
+        var that = $(this);
+        $(userQuestionRow).insertBefore(that);
+    });
 });
 
+var textCard =
+    '<div class="card-wrapper">\
+        <input class="card card-text" data-type="text" type="text"/>\
+    </div>';
+var userQuestionCard =
+    '<div class="card-wrapper">\
+        <input class="card card-user-question-text" data-type="user-question"/>\
+        <div class="card-plus">Plus</div>\
+    </div>';
+var dialogQuestionCard =
+    '<div class="card-wrapper">\
+        <input class="card card-dialog-question-text" data-type="dialog-question" type="text"/>\
+        <input class="card card-dialog-question-attr" data-type="dialog-question" type="text"/>\
+     </div>';
+var jsonCard =
+    '<div class="card-wrapper">\
+        <input class="card card-json" data-type="json" type="text"/>\
+    </div>';
+var imageCard =
+    '<div class="card-wrapper"> \
+        <input class="card card-image" data-type="image" type="text"/>\
+    </div>';
 
-var textCard = `<div><input class="card-text" type="text"></input></div>`;
-var question1Card = `<div><input class="card-question1" type="question-1"></input/>Card question</div>`;
-var question2Card = `<div><input class="card-question2" type="question-2"></input/>Card question 2</div>`;
-var imageCard = `<div class="card-image" type="image">Image<input></div>`;
+var userQuestionRow =
+    '<div class="card-row">\
+        <input class="card card-user-question-row-block" data-type="user-question" type="text"/>\
+        <input class="card card-user-question-row-value" data-type="user-question" type="text"/>\
+     </div>';
 
 function getCard(type) {
     switch (type) {
         case 'text':
             return textCard;
-        case 'question1':
-            return question1Card;
-        case 'question2':
-            return question2Card;
+        case 'user-question':
+            return userQuestionCard;
+        case 'dialog-question':
+            return dialogQuestionCard;
+        case 'json':
+            return jsonCard;
         case 'image':
             return imageCard;
     }
+}
 
+function parseCard(type, typeObj) {
+    var wrapper;
+    var result = {
+        type: type
+    };
+    switch (type) {
+        case 'text':
+            result.text = typeObj.val();
+            break;
+        case 'user-question':
+            wrapper = typeObj.closest('.card-wrapper');
+            result.text = wrapper.find('.card-user-question-text').val();
+            result.answers = [];
+            wrapper.find('.card-row').each(function () {
+                var that = $(this);
+                result.answers.push({
+                    block: that.find('.card-user-question-row-block').val(),
+                    value: that.find('.card-user-question-row-value').val()
+                });
+            });
+            break;
+        case 'dialog-question':
+            wrapper = typeObj.parent();
+            result.text = wrapper.find('.card-dialog-question-text').val();
+            result.attribute = wrapper.find('.card-dialog-question-attr').val();
+            break;
+        case 'json':
+            result.text = typeObj.val();
+            break;
+        case 'image':
+            result.text = typeObj.val();
+            break;
+    }
+    return result;
 }
