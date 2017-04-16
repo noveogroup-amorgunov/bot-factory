@@ -1,18 +1,5 @@
 var dial = {
-    dialogs: [
-        /*        {
-         title: 'Block 1 for Hello user',
-         cards: [{
-         text: "Hello user",
-         type: 'text'
-         }, {
-         text: "How are you?"
-         }]
-         }, {
-         title: 'help',
-         cards: ['....']
-         }*/
-    ]
+    dialogs: []
 };
 
 
@@ -56,8 +43,11 @@ $(function () {
     };
 
     var sendDialogs = function () {
-        $.post('http://localhost:8081/dialogs', dial).done(function (response) {
-            console.log(response);
+        $.ajax({
+            url: 'http://localhost:8081/dialogs',
+            method: 'POST',
+            data: JSON.stringify(dial),
+            contentType: 'application/json'
         });
     };
 
@@ -117,8 +107,7 @@ $(function () {
         var that = $(this);
         var dialogId = that.closest('.card-item').data('id');
         var type = that.data('type');
-        var number = that.closest('.card-wrapper').index() - 1;
-
+        var number = that.closest('.card-item').index();
         dial.dialogs[dialogId].cards[number] = parseCard(type, that);
         sendDialogs();
     });
