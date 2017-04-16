@@ -59,7 +59,10 @@ const handler = (session, next) => {
 
     // else send just message from apiai
     session.send(response.result.fulfillment.speech);
-  }).catch(error => session.sendError(error));
+  }).catch(error => {
+    console.log(error);
+    session.sendError(error);
+  });
 };
 
 module.exports = {

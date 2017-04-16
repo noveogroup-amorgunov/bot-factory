@@ -1,3 +1,6 @@
+/*
+global $
+*/
 var dial = {
     dialogs: []
 };
@@ -29,12 +32,16 @@ $(function () {
     };
 
     var showPreview = function () {
-      if (!dialogId) {
-
+      if (!dialogId && dialogId !== 0) {
+        $('.cards .title').hide();
+        $('.cards .types').hide();
+        $('.cards .startup').show();
       } else {
-
+        $('.cards .title').show();
+        $('.cards .types').show();
+        $('.cards .startup').hide();
       }
-    }
+    };
 
     var sendDialogs = function () {
         $.ajax({

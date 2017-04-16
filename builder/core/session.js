@@ -109,8 +109,6 @@ class Session {
     // lastQuestionData
     // console.log(answer);
     // console.log(data);
-    this.sessionState.awaitAnswer = false;
-    this.activeDialogs().notRunNextStepImmediately = false;
 
     // e.g.: "I want see a doctor" => "i want see doctor"
     const deleteArticles = msg => msg.replace(/ну |и |а |,|\.|! /gi, '').toLowerCase();
@@ -140,10 +138,14 @@ class Session {
     if (typeof data === 'string') {
       this.user.data[data] = answer;
       this.sessionState.lastQuestionData = null;
+      this.sessionState.awaitAnswer = false;
+      this.activeDialogs().notRunNextStepImmediately = false;
       this.startConversation();
     } else if (typeof returnedAnswer !== 'undefined' && returnedAnswer !== false) {
       this.results = returnedAnswer;
       this.sessionState.lastQuestionData = null;
+      this.sessionState.awaitAnswer = false;
+      this.activeDialogs().notRunNextStepImmediately = false;
       this.startConversation();
     } else {
       this.send('Я тебя не понял. Выбери пожалуйста вариант из списка');
