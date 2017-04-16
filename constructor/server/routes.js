@@ -49,9 +49,17 @@ exports.register = (server, options, next) => {
 
   routes.push({
     method: ['GET'],
-    path: '/constructor',
+    path: '/constructor/pizza-bot',
     handler: (request, reply) => {
       reply.view('index'); // , { param: request.params.param });
+    }
+  });
+
+  routes.push({
+    method: ['GET'],
+    path: '/constructor',
+    handler: (request, reply) => {
+      reply.view('bot-choose'); // , { param: request.params.param });
     }
   });
 
