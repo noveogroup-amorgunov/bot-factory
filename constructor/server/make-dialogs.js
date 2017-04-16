@@ -25,10 +25,12 @@ function makeDialogs(doc) {
       return card;
     });
 
-    const d = bot.dialog(dialog.title, _.reduce(dialog.cards, cardBuilder, []));
-    // console.log(dialog);
-    if (dialog.intent) {
-      d.triggerIntent(dialog.intent);
+    if (dialog.cards.length > 0) {
+      const d = bot.dialog(dialog.title, _.reduce(dialog.cards, cardBuilder, []));
+      // console.log(dialog);
+      if (dialog.intent) {
+        d.triggerIntent(dialog.intent);
+      }
     }
   });
 
