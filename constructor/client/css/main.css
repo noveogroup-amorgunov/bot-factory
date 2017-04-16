@@ -4,11 +4,17 @@
     background-color: #5eb5e0;*/
 }
 
+
+
 .header {
   font-family: 'Roboto', sans-serif;
   color: #fff;
   text-align: center;
   font-size: 1.5em;
+  background-image: url(http://icons.veryicon.com/ico/Movie%20%26%20TV/Futurama%20Vol.%204%20-%20The%20Robots/Robo%20Fry.ico);
+  background-size: 200px;
+  background-repeat: no-repeat;
+  background-position: right 180px bottom -40px;
 }
 
 .header span{
@@ -17,7 +23,7 @@
 
 .header div {
   margin-top: -30px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
   font-size: 0.8em;
 }
 
@@ -32,6 +38,25 @@
     background-color: #718C00;
 }
 
+.dialog-item {
+  position: relative;
+  margin-right: 20px;
+}
+
+.dialog-item .delete {
+  background-color: #333;
+  /*height: 16px;*/
+  position: absolute;
+  right: -6px;
+  top: 0px;
+  margin-top: -10px;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #fff;
+  width: 16px;
+  padding-left: 1px;
+  line-height: 20px;
+}
 
 
 .group-title {
@@ -168,6 +193,7 @@ body {
   float: left;
   background: #eee;
   height: 100%;
+  margin-bottom: 50px;
 }
 
 .cards {
@@ -280,4 +306,10 @@ body {
 
 .card-row input.card-user-question-row-dialog, .card-row input.card-user-question-row-value {
   width: 110px;
+}
+
+
+
+.active {
+  background: #7fec70;
 }

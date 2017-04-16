@@ -93,7 +93,7 @@ class Session {
     this.activeDialogs().notRunNextStepImmediately = true;
 
     if (Array.isArray(data)) {
-      this.bot.connector.send(`${this._parseMsg(message)}: ${data.map((answer, index) => `\n${index}. ${answer.text}`).join('')}`, this.user);
+      this.bot.connector.send(`${this._parseMsg(message)}: ${data.map((answer, index) => `\n${index}. ${answer.value}`).join('')}`, this.user);
     } else {
       this.bot.connector.send(this._parseMsg(message), this.user);
     }
@@ -126,7 +126,7 @@ class Session {
       } if (Array.isArray(data)) {
         let result = false;
         data.forEach((answ, index) => {
-          if (hasSubstring(answer, answ.text)) {
+          if (hasSubstring(answer, answ.value)) {
             result = index;
           }
         });
@@ -201,6 +201,10 @@ class Session {
 
   replaceDialog() {
     throw new Error('Not implement yet');
+  }
+
+  sendError() {
+    this.send('Что-то пошло не так, на сервере произошла ошибка, извините!');
   }
 
   endConversation(msg) {

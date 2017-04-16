@@ -75,13 +75,13 @@ $app->get('/new_offer', function () use ($app, $pizzaStore) {
 $app->get('/order', function (Request $request) use ($pizzaStore, $pizzaPrice) {
     $type = $request->get('type');
     $size = $request->get('size');
-    $quantity = $request->get('count');
+    $quantity = ($request->get('count')) ? $request->get('count') : 1;
 
     // process order..
 
     return new JsonResponse([
             'success' => true,
-            'message' => sprintf('Вы успешно сделали заказ! %s уже едет к Вам. Общая сумма заказа: %d',
+            'data' => sprintf('Вы успешно сделали заказ! Пицца %s уже едет к Вам. Общая сумма заказа: %d',
                 $pizzaStore[$type]['name'],
                 $pizzaPrice[$size]['price'] * $quantity
             ),

@@ -13,6 +13,16 @@ function apiaiRecognizer(sessionId, msg) {
   });
 }
 
+function apiaiDeleteContext(sessionId) {
+  return new Promise((resolve, reject) => {
+    const request = app.deleteContextsRequest({ sessionId });
+
+    request.on('response', resolve);
+    request.on('error', reject);
+    request.end();
+  });
+}
+
 // api ai recognizer
 const handler = (session, next) => {
   const msg = session.message.text;
@@ -25,6 +35,7 @@ const handler = (session, next) => {
   }
 
   apiaiRecognizer(sessionId, msg)
+  // .apiaiDeleteContext(sessionId)
   .then((response) => {
     console.log(response);
     const intent = response.result.metadata.intentName;

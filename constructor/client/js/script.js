@@ -8,7 +8,7 @@ var card = $(`
 var dialogId = null;
 
 $(function () {
-    var dialogItem = '<div class="dialog-item">[TITLE]</div>';
+    var dialogItem = '<div class="dialog-item">[TITLE] <div class="delete">x</div></div>';
     var cardsContainer = $('.wrapper .cards .items');
     var $cardsTitle = $('.wrapper .cards .title .title-input');
 
@@ -27,6 +27,14 @@ $(function () {
             dial.dialogs = dialogs;
         });
     };
+
+    var showPreview = function () {
+      if (!dialogId) {
+
+      } else {
+
+      }
+    }
 
     var sendDialogs = function () {
         $.ajax({
@@ -49,6 +57,7 @@ $(function () {
     };
 
     buildDialogs();
+    showPreview();
 
     $('.plus').on('click', function () {
         var dialLength = getMaxDialogId() + 1;
@@ -79,6 +88,33 @@ $(function () {
         });
     });
 
+    $('body').on('click', '.cards .delete', function () {
+      var $parent = $(this).closest('.card-item');
+      var index = $parent.index();
+      $parent.remove();
+
+      showPreview();
+
+      // console.log($parent);
+      // console.log(index);
+
+      dial.dialogs[dialogId].cards.splice(index, 1);
+      sendDialogs();
+    });
+
+    $('body').on('click', '.wrapper > .dialogs .delete', function () {
+      var $parent = $(this).parent();
+      var id = $(this).data('id');
+      var index = $parent.index();
+      $parent.remove();
+
+      // console.log($parent);
+      // console.log(index);
+
+      dial.dialogs.splice(index, 1);
+      sendDialogs();
+    });
+
     $('body').on('blur', '.card-item input.card', function () {
         var that = $(this);
         var type = that.data('type');
@@ -105,6 +141,10 @@ $(function () {
                 }
             }
         });
+
+        $('.dialog-item').removeClass('active');
+        $(this).addClass('active');
+        showPreview();
     });
 
     $('body').on('click', '.card-plus', function () {
@@ -198,7 +238,7 @@ function renderCard(card) {
             card.answers.forEach(function (cardImport) {
                 var row = $(userQuestionRow);
                 row.find('.card-user-question-row-dialog').val(cardImport.dialog);
-                row.find('.card-user-question-row-value').val(cardImport.text);
+                row.find('.card-user-question-row-value').val(cardImport.value);
                 row.insertBefore(cardElement.find('.card-plus'));
             });
             break;
@@ -221,6 +261,7 @@ function renderCard(card) {
 }
 
 function parseCard(type, typeObj) {
+    // console.log('parseCard');
     var wrapper;
     var result = {
         type: type
