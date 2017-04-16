@@ -15,19 +15,20 @@ var dial = {
     ]
 };
 
-
 $(function () {
-    var card = $('<div class="card-item" data-id=""><input class="title-input" placeholder="title" maxlength="25" type="text"> \
-    <div class="types">\
-    <div class="type" data-type="text">Text</div>\
-    <div class="type" data-type="user-question">User Question</div>\
-    <div class="type" data-type="dialog-question">Dialog Question</div>\
-    <div class="type" data-type="json-api">JSON API</div>\
-    <div class="type" data-type="image">Image</div>\
-    </div>\
-    </div>');
+    var card = $(`
+      <div class="card-item" data-id="">
+        <input class="title-input" placeholder="title" maxlength="25" type="text"> 
+        <div class="types">
+          <div class="type" data-type="text">Text</div>
+          <div class="type" data-type="user-question">User Question</div>
+          <div class="type" data-type="dialog-question">Dialog Question</div>
+          <div class="type" data-type="json-api">JSON API</div>
+          <div class="type" data-type="image">Image</div>
+        </div>
+      </div>`);
     var dialogItem = '<div class="dialog-item">[TITLE]</div>';
-    var cardsContainer = $('.container .cards');
+    var cardsContainer = $('.wrapper .cards');
 
     var buildDialogs = function () {
         $.get('http://localhost:8081/dialogs').done(function (response) {
@@ -40,15 +41,19 @@ $(function () {
                 var newDialog = $(dialogItem.replace('[TITLE]', dialog.title));
                 newDialog.attr('data-id', index);
                 newDialog.insertBefore(plus);
-                dialog.cards.forEach(function (cardImport) {
+                dialog.cards.forEach(function (cardImport, i) {
+                  var newCard = card.clone().first().attr('data-id', index);
 
-                    var newCard = card.clone().first().attr('data-id', index);
-                    newCard.find('.title-input').val(dialog.title);
-                    newCard.appendTo(cardsContainer);
-                    var cardElement = renderCard(cardImport);
-                    if (cardElement) {
-                        cardElement.insertBefore(newCard.find('.types'));
-                    }
+                  if (i !== 0) {
+                    newCard.find('.title-input').hide();
+                  }
+
+                  newCard.find('.title-input').val(dialog.title);
+                  newCard.appendTo(cardsContainer);
+                  var cardElement = renderCard(cardImport);
+                  if (cardElement) {
+                      cardElement.insertBefore(newCard.find('.types'));
+                  }
                 });
             });
             dial.dialogs = dialogs;
@@ -136,23 +141,42 @@ $(function () {
 });
 
 var textCard =
-    '<div class="card-wrapper">\
-        <input class="card card-text" data-type="text" type="text"/>\
-    </div>';
+    `<div class="card-wrapper card card-text">
+      <div class="delete">X</div>
+      <div class="card-hint">Текстовая карточка</div>
+      <input class="card card-text" data-type="text" type="text" placeholder="Введите ответа бота..."/>
+    </div>`;
 var userQuestionCard =
-    '<div class="card-wrapper">\
-        <input class="card card-user-question-text" data-type="user-question"/>\
-        <div class="card-plus">Plus</div>\
-    </div>';
+    `<div class="card-wrapper card card-user-question">
+      <div class="delete">X</div>
+      <div class="card-hint">Вопрос пользователю</div>
+      <input class="card card-user-question-text" data-type="user-question"/> <br />
+      <div class="card-plus questions-plus">добавить ответ</div>
+    </div>`;
+
+/*      <div class="questions">
+        <div class="question">
+           <select><option>Order Pizza</option></select> <input type="text" />           
+        </div>
+        <div class="question">
+           <select><option>Order Pizza</option></select> <input type="text" />           
+        </div>
+      </div>*/
+
 var dialogQuestionCard =
-    '<div class="card-wrapper">\
-        <input class="card card-dialog-question-text" data-type="dialog-question" type="text"/>\
-        <input class="card card-dialog-question-attr" data-type="dialog-question" type="text"/>\
-     </div>';
+    `<div class="card-wrapper card card-text">
+        <div class="delete">X</div>
+        <div class="card-hint">Сохранение информации</div>
+        <div><input class="card card-dialog-question-text" data-type="dialog-question" type="text"/><br><br></div>
+        <div class="card-hint">В атрибут</div>
+        <input class="card card-dialog-question-attr" data-type="dialog-question" type="text"/>
+     </div>`;
 var jsonCard =
-    '<div class="card-wrapper">\
-        <input class="card card-json" data-type="json-api" type="text"/>\
-    </div>';
+    `<div class="card-wrapper card card-json-api">
+      <div class="delete">X</div>
+      <div class="card-hint">Интеграция с api-сервером</div>
+      <select><option>GET</option><option>POST</option></select> <input class="card card-json" data-type="json-api" type="text"/>
+    </div>`;
 var imageCard =
     '<div class="card-wrapper"> \
         <input class="card card-image" data-type="image" type="text"/>\

@@ -1,7 +1,12 @@
 .app-sidebar {
-    width: 30%;
+/*    width: 30%;
     float: left;
-    background-color: #5eb5e0;
+    background-color: #5eb5e0;*/
+}
+
+.sidebar-nav {
+  padding: 0;
+  margin-top: 5px;
 }
 
 .container {
@@ -9,6 +14,8 @@
     float: left;
     background-color: #718C00;
 }
+
+
 
 .group-title {
     position: relative;
@@ -93,7 +100,7 @@
 }
 
 .card-item {
-    display: none;
+  display: none;
 }
 
 .card-item .types {
@@ -101,11 +108,159 @@
     position: relative;
     width: 80%;
     margin: 0 auto;
+    height: 20px;
 }
 
 .card-item .types .type {
     float: left;
-    padding: 10px;
-    border: 1px solid gray;
-    width: 120px;
+    padding: 1px 5px;
+    border: 1px solid #999;
+    opacity: 0.5;
+    /*width: 0px;*/
 }
+
+.card-item .types:hover .type {
+    opacity: 1;
+    cursor: pointer;
+}
+
+.card-item .types .type:hover {
+    opacity: 1;
+    cursor: pointer;
+    background: #eee;
+}
+
+
+
+/*.card-item .title-input:not(:first-child) {
+  display: none;
+}*/
+
+.title-input ~ .title-input {
+  display: none;
+}
+
+
+
+
+body {
+  background: #333;
+}
+
+.wrapper {
+  margin: 0 auto;
+  width: 80%;
+  min-height: 300px;
+  background: #fff;
+  padding-bottom: 10px;
+}
+
+.dialogs {
+  width: 20%;
+  padding: 15px;
+  float: left;
+  background: #eee;
+  height: 100%;
+}
+
+.cards {
+  padding-top: 10px;
+  margin-left: 40%;
+  width: 60%:
+}
+
+.card-item > .card {
+  color: #555;
+  margin: 15px;
+  padding: 15px;
+  background-color: #eee;
+  width: 400px;
+  position: relative;
+}
+
+.card-item .delete {
+  background: #000;
+  height: 20px;
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  background-color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 3;
+  color: #000;
+  width: 16px;
+  padding-left: 4px;
+}
+
+.card-item > .card-text {
+  background-image: url(http://icons.veryicon.com/ico/Movie%20%26%20TV/Futurama%20Vol.%204%20-%20The%20Robots/Fat%20Bot.ico);
+  background-repeat: no-repeat;
+  background-size: 30%;
+  background-position: right -10px top;
+
+}
+
+.card-item > .card-json-api {
+  background-image: url(http://findicons.com/files/icons/1288/futurama_vol_3_the_aliens/128/gunther.png);
+  background-repeat: no-repeat;
+  background-size: 25%;
+  background-position: right 0px top 0px;
+  background-color: #45f;
+  color: #fff;
+
+}
+
+.card-item > .card-user-question {
+  background-image: url(http://icons.veryicon.com/ico/Movie%20%26%20TV/Futurama%20Vol.%204%20-%20The%20Robots/Robo%20Fry.ico);
+  background-repeat: no-repeat;
+  background-size: 25%;
+  background-position: right 0px bottom 0px;
+
+}
+
+.card-item > .card .questions-plus {
+  background: #eee;
+  padding: 5px;
+  text-align: center;
+}
+
+.card-hint {
+  margin-top: -5px;
+  margin-bottom: 5px;
+  font-size: 0.7em;
+  text-transform: uppercase;
+}
+
+.card-item > .card input {
+  outline: 0px;
+  padding: 2px 10px;
+  border: 0px;
+  height: 30px;
+  width: 150px;
+  opacity: 0.95;
+  margin: 2px;
+  /*display: block;
+  margin: 0 auto;*/
+}
+
+.card-item > .card .questions {
+  margin-top: 10px;
+  background: #ddd;
+  padding: 5px 10px;
+  width: 190px;
+}
+
+.card-item > .card select {
+  outline: 0px;
+  padding: 2px 10px;
+  border: 0px;
+  height: 34px;
+  width: 80px;
+}
+
+.card-item > .card .questions input, .card .questions select{
+  width: 80px;
+  
+}
+

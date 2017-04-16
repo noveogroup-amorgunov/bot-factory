@@ -5,6 +5,7 @@ require('./bot');
 const mongoose = require('mongoose');
 const Hapi = require('hapi');
 const inert = require('inert');
+const vision = require('vision');
 const hapiBoomDecorators = require('hapi-boom-decorators');
 const routes = require('./routes');
 const DialogFlow = require('../../common/models/dialog-flow');
@@ -25,7 +26,9 @@ server.connection({
 const plugins = [
   inert, // register static file and directory routers
   hapiBoomDecorators, // decorate reply with Boom errors
+  vision
 ];
+
 
 server.register(plugins.concat(routes), (err) => {
   if (err) {
