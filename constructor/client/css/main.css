@@ -113,14 +113,10 @@
     width: 13px;
     height: 24px;
     opacity: .3;
-    vertical-align: -6px;
+    vertical-align: -3px;
 }
 
-.card-item {
-  display: none;
-}
-
-.card-item .types {
+.wrapper .cards .types {
     text-align: center;
     position: relative;
     width: 80%;
@@ -128,7 +124,7 @@
     height: 20px;
 }
 
-.card-item .types .type {
+.wrapper .cards .types .type {
     float: left;
     padding: 1px 5px;
     border: 1px solid #999;
@@ -136,22 +132,16 @@
     /*width: 0px;*/
 }
 
-.card-item .types:hover .type {
+.wrapper .cards .types:hover .type {
     opacity: 1;
     cursor: pointer;
 }
 
-.card-item .types .type:hover {
+.wrapper .cards .types .type:hover {
     opacity: 1;
     cursor: pointer;
     background: #eee;
 }
-
-
-
-/*.card-item .title-input:not(:first-child) {
-  display: none;
-}*/
 
 .title-input ~ .title-input {
   display: none;
@@ -183,7 +173,7 @@ body {
 .cards {
   padding-top: 10px;
   margin-left: 40%;
-  width: 60%:
+  width: 60%;
 }
 
 .card-item > .card {
@@ -241,6 +231,7 @@ body {
   padding: 5px;
   text-align: center;
   width: 80%;
+  cursor: pointer;
 }
 
 .card-hint {
@@ -284,7 +275,7 @@ body {
 
 .card-item > .card .questions input, .card .questions select{
   width: 70px;
-  
+
 }
 
 .card-row input.card-user-question-row-dialog, .card-row input.card-user-question-row-value {
