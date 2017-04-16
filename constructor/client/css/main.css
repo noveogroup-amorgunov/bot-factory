@@ -4,6 +4,23 @@
     background-color: #5eb5e0;*/
 }
 
+.header {
+  font-family: 'Roboto', sans-serif;
+  color: #fff;
+  text-align: center;
+  font-size: 1.5em;
+}
+
+.header span{
+  color: #eee;
+}
+
+.header div {
+  margin-top: -30px;
+  margin-bottom: 20px;
+  font-size: 0.8em;
+}
+
 .sidebar-nav {
   padding: 0;
   margin-top: 5px;
@@ -223,6 +240,7 @@ body {
   background: #eee;
   padding: 5px;
   text-align: center;
+  width: 80%;
 }
 
 .card-hint {
@@ -232,23 +250,28 @@ body {
   text-transform: uppercase;
 }
 
-.card-item > .card input {
+.title-input {
+  font-size: 1.5em;
+  width: 80%;
+}
+
+.card-item > .card input, input {
   outline: 0px;
   padding: 2px 10px;
   border: 0px;
   height: 30px;
-  width: 150px;
+  width: 250px;
   opacity: 0.95;
   margin: 2px;
   /*display: block;
   margin: 0 auto;*/
 }
 
-.card-item > .card .questions {
+.card-item > .card .questions, .card-row {
   margin-top: 10px;
   background: #ddd;
   padding: 5px 10px;
-  width: 190px;
+  width: 290px;
 }
 
 .card-item > .card select {
@@ -260,7 +283,10 @@ body {
 }
 
 .card-item > .card .questions input, .card .questions select{
-  width: 80px;
+  width: 70px;
   
 }
 
+.card-row input.card-user-question-row-dialog, .card-row input.card-user-question-row-value {
+  width: 110px;
+}
