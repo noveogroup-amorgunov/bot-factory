@@ -106,6 +106,9 @@ module.exports = class VKConnector extends EventEmitter {
     console.log('VKConnector::send');
     console.log(message);
     console.log(user.id);
+    if (!message) {
+      return;
+    }
     return app.sendMessage(user.id, message);
   }
 

@@ -105,18 +105,44 @@ class Session {
 
   receiveAnswer(answer) {
     const data = this.sessionState.lastQuestionData;
+    // console.log(data);
     // lastQuestionData
     // console.log(answer);
     // console.log(data);
     this.sessionState.awaitAnswer = false;
     this.activeDialogs().notRunNextStepImmediately = false;
 
+    // e.g.: "I want see a doctor" => "i want see doctor"
+    const deleteArticles = msg => msg.replace(/ну |и |а |,|\.|! /gi, '').toLowerCase();
+    const isEqualsString = (s1, s2) => deleteArticles(s1) === deleteArticles(s2);
+    const hasSubstring = (s1, include) =>
+      deleteArticles(s1).indexOf(deleteArticles(include)) !== -1;
+
+    console.log(data, answer);
+
+    const getAnswer = () => {
+      if (+answer == answer && data[answer]) {
+        return answer;
+      } if (Array.isArray(data)) {
+        let result = false;
+        data.forEach((answ, index) => {
+          if (hasSubstring(answer, answ.text)) {
+            result = index;
+          }
+        });
+        return result;
+      }
+      return false;
+    };
+
+    const returnedAnswer = getAnswer();
+
     if (typeof data === 'string') {
       this.user.data[data] = answer;
       this.sessionState.lastQuestionData = null;
       this.startConversation();
-    } else if (+answer == answer && data[answer]) {
-      this.results = answer;
+    } else if (typeof returnedAnswer !== 'undefined' && returnedAnswer !== false) {
+      this.results = returnedAnswer;
       this.sessionState.lastQuestionData = null;
       this.startConversation();
     } else {

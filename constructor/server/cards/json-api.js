@@ -24,7 +24,9 @@ module.exports = (acc, item) => {
     requestPromise(item.text).then((body) => {
       session.send(JSON.parse(body).data);
       !itsem.isLast && next();
-    });
+    }).catch((error) => 
+      session.send('Упс, произошла непредвиденная ошибка..')
+    );
   });
   return acc;
 };
