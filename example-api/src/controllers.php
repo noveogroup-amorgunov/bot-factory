@@ -14,26 +14,26 @@ $app->get('/', function () use ($app) {
     ->bind('homepage');
 
 $pizzaStore = [
-    'pepperoni' => [
+    'пепперони' => [
         'name' => 'Пепперони',
         'image' => 'http://slice.seriouseats.com/images/20100201-delivery-papajohns.jpg',
         'description' => 'Пепперони - одна из самых популярных пицц в мире. Да что уж, это самая популярная пицца во Вселенной!',
     ],
-    'margarita' => [
+    'маргарита' => [
         'name' => 'Маргарита',
         'image' => 'https://qph.ec.quoracdn.net/main-qimg-311ad5650cf27f9a806ada70a21a2678-c',
         'description' => 'Эта пицца названа в честь итальянской королевы Маргариты Савонской, покровительницы Красного креста.',
     ],
-    'cheese' => [
+    'cырная' => [
         'name' => 'Сырная',
         'image' => 'http://www.jackspizza.com/media/1039/cheese.jpg',
         'description' => 'Восхитительно вкусная за счет идеального сочетания четырех сортов сыра.',
     ],
 ];
 $pizzaPrice = [
-    'small' => ['value' => '25 см', 'price' => 300],
-    'middle' => ['value' => '30 см', 'price' => 450],
-    'large' => ['value' => '35 см', 'price' => 550],
+    'маленький' => ['value' => '25 см', 'price' => 300],
+    'средний' => ['value' => '30 см', 'price' => 450],
+    'большой' => ['value' => '35 см', 'price' => 550],
 ];
 
 $app->get('/product/{code}', function (Request $request) use ($app, $pizzaStore) {
@@ -49,16 +49,33 @@ $app->get('/sizes', function () use ($app, $pizzaPrice) {
     return new JsonResponse($pizzaPrice);
 });
 
-$app->post('/order', function (Request $request) use ($pizzaStore, $pizzaPrice) {
-    $type = $request->request->get('code');
-    $size = $request->request->get('size');
-    $quantity = $request->get('quantity');
+$app->get('/popular_others', function () use ($app, $pizzaStore) {
+    $results = array_values(array_map(function ($value) {
+        return $value['name'];
+    }, $pizzaStore));
+    $rand = array_rand($results, 1);
+    unset($results[$rand]);
+    return new JsonResponse(['data' => array_values($results)]);
+});
+
+$app->get('/new_offer', function () use ($app, $pizzaStore) {
+    $results = array_values(array_map(function ($value) {
+        return $value['name'];
+    }, $pizzaStore));
+    $rand = array_rand($results, 1);
+    return new JsonResponse(['data' => $results[$rand]]);
+});
+
+$app->get('/order', function (Request $request) use ($pizzaStore, $pizzaPrice) {
+    $type = $request->get('type');
+    $size = $request->get('size');
+    $quantity = $request->get('count');
 
     // process order..
 
     return new JsonResponse([
             'success' => true,
-            'message' => sprintf('Thank you for your order! %s is already coming to you. Total price: %d',
+            'message' => sprintf('Вы успешно сделали заказ! %s уже едет к Вам. Общая сумма заказа: %d',
                 $pizzaStore[$type]['name'],
                 $pizzaPrice[$size]['price'] * $quantity
             ),
