@@ -75,7 +75,7 @@ $app->get('/new_offer', function () use ($app, $pizzaStore) {
 $app->get('/order', function (Request $request) use ($pizzaStore, $pizzaPrice) {
     $type = $request->get('type');
     $size = $request->get('size');
-    $quantity = ($request->get('count')) ? $request->get('count') : 1;
+    $quantity = ($request->get('number')) ? $request->get('number') : 1;
 
     // process order..
 
