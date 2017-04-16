@@ -2,20 +2,15 @@ var dial = {
     dialogs: []
 };
 
+var card = $(`
+      <div class="card-item" data-id=""></div>
+ `);
+var dialogId = null;
+
 $(function () {
-    var card = $(`
-      <div class="card-item" data-id="">
-        <input class="title-input" placeholder="title" maxlength="25" type="text"> 
-        <div class="types">
-          <div class="type" data-type="text">Text</div>
-          <div class="type" data-type="user-question">User Question</div>
-          <div class="type" data-type="dialog-question">Dialog Question</div>
-          <div class="type" data-type="json-api">JSON API</div>
-          <div class="type" data-type="image">Image</div>
-        </div>
-      </div>`);
     var dialogItem = '<div class="dialog-item">[TITLE]</div>';
-    var cardsContainer = $('.wrapper .cards');
+    var cardsContainer = $('.wrapper .cards .items');
+    var $cardsTitle = $('.wrapper .cards .title .title-input');
 
     var buildDialogs = function () {
         $.get('http://localhost:8081/dialogs').done(function (response) {
@@ -28,20 +23,6 @@ $(function () {
                 var newDialog = $(dialogItem.replace('[TITLE]', dialog.title));
                 newDialog.attr('data-id', index);
                 newDialog.insertBefore(plus);
-                dialog.cards.forEach(function (cardImport, i) {
-                  var newCard = card.clone().first().attr('data-id', index);
-
-                  if (i !== 0) {
-                    newCard.find('.title-input').hide();
-                  }
-
-                  newCard.find('.title-input').val(dialog.title);
-                  newCard.appendTo(cardsContainer);
-                  var cardElement = renderCard(cardImport);
-                  if (cardElement) {
-                      cardElement.insertBefore(newCard.find('.types'));
-                  }
-                });
             });
             dial.dialogs = dialogs;
         });
@@ -72,55 +53,58 @@ $(function () {
     $('.plus').on('click', function () {
         var dialLength = getMaxDialogId() + 1;
         var dialogTitle = 'title' + dialLength;
-
         dial.dialogs.push({
             title: dialogTitle,
             cards: []
         });
-
         $(dialogItem.replace('[TITLE]', dialogTitle)).attr('data-id', dialLength).insertBefore($(this));
-        var newCard = card.clone().first().attr('data-id', dialLength);
-        newCard.find('.title-input').val(dialogTitle);
-        newCard.appendTo(cardsContainer);
-        $('.card-item:not([data-id="' + dialLength + '"])').hide();
     });
 
     $('body').on('blur', '.title-input', function () {
         var that = $(this);
-        var dialogId = that.parent('.card-item').data('id');
         var titleDialog = that.val();
         $('.dialog-item[data-id="' + dialogId + '"]').html(titleDialog);
         dial.dialogs[dialogId].title = titleDialog;
         sendDialogs();
     });
 
-    $('body').on('click', '.card-item .type', function () {
+    $('body').on('click', '.cards .type', function () {
         var type = $(this).data('type');
         var typeObj = getCard(type);
-        var dialogId = $(this).closest('.card-item').attr('data-id');
-        $(typeObj).insertBefore($(this).parent('.types'));
-        var dialog = dial.dialogs[dialogId];
-        dialog.cards.push(
-            {
-                type: type,
-                text: null
-            }
-        );
+        $(typeObj).appendTo(cardsContainer);
+
+        dial.dialogs[dialogId].cards.push({
+            type: type,
+            text: null
+        });
     });
 
-    $('body').on('blur', '.card-item .card', function () {
+    $('body').on('blur', '.card-item input.card', function () {
         var that = $(this);
-        var dialogId = that.closest('.card-item').data('id');
         var type = that.data('type');
         var number = that.closest('.card-item').index();
+
         dial.dialogs[dialogId].cards[number] = parseCard(type, that);
         sendDialogs();
     });
 
     $('body').on('click', '.dialog-item', function () {
+        cardsContainer.html('');
         var id = $(this).data('id');
-        $('.card-item:not([data-id="' + id + '"])').hide();
-        $('.card-item[data-id="' + id + '"]').show();
+        dialogId = id;
+        var dialog = dial.dialogs[id];
+        $cardsTitle.val(dialog.title);
+        dialog.cards.forEach(function (cardImport, i) {
+            var newCard = card.clone().first().attr('data-id', id);
+
+            if (cardImport) {
+                newCard.appendTo(cardsContainer);
+                var cardElement = renderCard(cardImport);
+                if (cardElement) {
+                    cardElement.appendTo(newCard);
+                }
+            }
+        });
     });
 
     $('body').on('click', '.card-plus', function () {
@@ -132,7 +116,7 @@ $(function () {
 var textCard =
     `<div class="card-wrapper card card-text">
       <div class="delete">X</div>
-      <div class="card-hint">Текстовая карточка</div>
+      <div class="card-hint">Бот ответит:</div>
       <input class="card card-text" data-type="text" type="text" placeholder="Введите ответа бота..."/>
     </div>`;
 var userQuestionCard =
@@ -145,10 +129,10 @@ var userQuestionCard =
 
 /*      <div class="questions">
         <div class="question">
-           <select><option>Order Pizza</option></select> <input type="text" />           
+           <select><option>Order Pizza</option></select> <input type="text" />
         </div>
         <div class="question">
-           <select><option>Order Pizza</option></select> <input type="text" />           
+           <select><option>Order Pizza</option></select> <input type="text" />
         </div>
       </div>*/
 
@@ -178,18 +162,27 @@ var userQuestionRow =
      </div>';
 
 function getCard(type) {
+    var clone = card.clone();
+
     switch (type) {
         case 'text':
-            return textCard;
+            clone.append($(textCard));
+        break;
         case 'user-question':
-            return userQuestionCard;
+            clone.append($(userQuestionCard));
+            break;
         case 'dialog-question':
-            return dialogQuestionCard;
+            clone.append($(dialogQuestionCard));
+            break;
         case 'json-api':
-            return jsonCard;
+            clone.append($(jsonCard));
+            break;
         case 'image':
-            return imageCard;
+            clone.append($(imageCard));
+            break;
+
     }
+    return clone;
 }
 
 function renderCard(card) {
